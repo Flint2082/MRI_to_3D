@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ============================================================
+	@author Samuel Imriska
+
+	FRi 2008-06-18:
+	This is the Agility log4j configuration file,
+	as deployed with IMPAX-EE application since R20.
+	The created logfiles are named agility*.log.
+	The logging system "rolls" those files on every startup.
+	Possible log levels are:
+	all | debug | info | warn | error | fatal | off | null
+============================================================= -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+ 
+
+
+   <!-- ============================== -->
+   <!-- Append messages to the console -->
+   <!-- ============================== -->
+
+   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+      <param name="Target" value="System.out"/>
+		<layout class="org.apache.log4j.PatternLayout">
+     		<param name="ConversionPattern"	value="%d %-5p [%c{1}] (%t) %m%n"/>
+		</layout>
+   </appender>
+   
+ 
+   <!-- ================ -->
+   <!-- Limit categories -->
+   <!-- ================ -->
+  
+    <!-- Limit the org.dcm4cheri category to INFO -->
+     <category name="org.dcm4che3">
+      <priority value="WARN"/>
+   </category>
+   
+   <category name="org.dcm4che2">
+      <priority value="WARN"/>
+   </category>
+   
+   <category name="org.dcm4che">
+      <priority value="WARN"/>
+   </category>
+   
+   
+     
+   
+   <!-- ======================= -->
+   <!-- Setup the Root category -->
+   <!-- ======================= -->
+
+   <root>
+	   <level value="INFO" class="org.apache.log4j.Level"/>
+	      <appender-ref ref="CONSOLE"/>
+  </root>
+
+</log4j:configuration>
