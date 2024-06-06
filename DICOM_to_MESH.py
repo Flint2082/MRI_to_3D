@@ -10,10 +10,12 @@ from dataclasses import dataclass
 
 
 
-data_dir = 'data/DICOM/210'
+data_dir = 'data/DICOM/top_hl'
 MAX_VAL = 2048
 
 alpha = 25
+
+kernel = np.ones((3,3),np.uint8)
 
 def callback(val):
     pass
@@ -25,54 +27,52 @@ class imageData:
 
 img_dat_list = []
 
-# cv.namedWindow("sliders")
-# cv.createTrackbar("alpha", "sliders", 0, 100, callback)
-# cv.createTrackbar("low_lim", "sliders", 0, MAX_VAL, callback)
-# cv.createTrackbar("top_lim", "sliders", 0, MAX_VAL, callback)
 
-
-for fpath in glob.glob(data_dir + "/1.3.12.2.1107.5.2.30.27329.202310170821*.dcm"):
+for fpath in glob.glob(data_dir + "/1.3.12.2.1107.5.2.30.27329.2023*.dcm"):
     ds = dcmread(fpath)
     img_dat_list.append(imageData(ds.pixel_array,ds.get('SliceLocation', 0)))
-    # img = ds.pixel_array
-    # mask = np.zeros(img.size, dtype=bool)
-    # max_val = 0
-
-    # plt.hist(img)
-    # plt.show
-    # cv.imshow(winname = "photo", mat = 20*img)
  
 img_dat_list.sort(key = lambda x: x.slc)   
  
+cv.namedWindow("sliders", cv.WINDOW_NORMAL)
+cv.resizeWindow("sliders",640,300)
+cv.createTrackbar("alpha", "sliders", 0, 100, callback)
+cv.createTrackbar("low_lim", "sliders", 0, MAX_VAL, callback)
+cv.createTrackbar("top_lim", "sliders", 0, MAX_VAL, callback)
+
 for img_dat in img_dat_list:
-    print(img_dat.slc)
-    cv.imshow("photo", 20*img_dat.img)
     
-    cv.waitKey()
-cv.destroyAllWindows()    
+    # histogram, bin_edges = np.histogram(img_dat.img, bins=256) 
+    # fig, ax = plt.subplots()
+    # ax.plot(histogram) 
 
-    # while(True):
-    #     alpha = cv.getTrackbarPos("alpha", "sliders")
-    #     low_lim = cv.getTrackbarPos("low_lim", "sliders")
-    #     top_lim = cv.getTrackbarPos("top_lim", "sliders")
+    
+    while(True):
+        alpha = cv.getTrackbarPos("alpha", "sliders")
+        low_lim = cv.getTrackbarPos("low_lim", "sliders")
+        top_lim = cv.getTrackbarPos("top_lim", "sliders")
 
-        # mask = np.bitwise_and(ds.pixel_array > low_lim, ds.pixel_array < top_lim)
+        mask = np.bitwise_and(img_dat.img > low_lim, img_dat.img < top_lim)
+        mask = mask.astype(float)
+        mask = cv.erode(mask, kernel)
+        mask = cv.dilate(mask, kernel)
 
-        
         # plot the image using opencv
-        # cv.imshow(winname = "photo", mat = 20*img)
-        # cv.imshow(winname = "mask", mat = mask.astype(float))
+        cv.imshow(winname = "photo", mat = 20*img_dat.img)
+        cv.imshow(winname = "mask", mat = mask.astype(float))
 
-        # Wait for 1 ms and check if 'q' key is pressed
-        # key = cv.waitKey(0)
-        # if key & 0xFF == ord('q') or key & 0xFF == ord('e') :
-        #     break
+        # Wait for 0 ms and check if 'q' key is pressed
+        key = cv.waitKey(1)
+        if key == -1:
+            continue
+        elif key & 0xFF == ord('q') or key & 0xFF == ord('e') :
+            break
         
-#     if key & 0xFF == ord('e'):
-#         # Close the window
+    if key & 0xFF == ord('e'):
+        # Close the window
         
-#         break 
-# cv.destroyAllWindows()    
+        break 
+cv.destroyAllWindows()    
 
     
 
