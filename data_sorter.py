@@ -1,5 +1,7 @@
 import os
 import shutil
+import dicom2jpg
+
 
 def organize_images_by_digit(source_dir, target_dir, digit_position):
     """
@@ -16,7 +18,7 @@ def organize_images_by_digit(source_dir, target_dir, digit_position):
     # List all files in the source directory
     for filename in os.listdir(source_dir):
         # Check if the file is an image (optional: based on extension)
-        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.dcm')):
+        if filename.lower().endswith(('.dcm')):
             # Extract the digit at the specified position
             if len(filename) > digit_position and filename[digit_position].isdigit():
                 digits = filename[digit_position:digit_position+3]
@@ -30,10 +32,14 @@ def organize_images_by_digit(source_dir, target_dir, digit_position):
                 source_file = os.path.join(source_dir, filename)
                 target_file = os.path.join(digit_folder, filename)
                 
-                # Move the file
-                shutil.move(source_file, target_file)
-                print(f"Moved {filename} to {digit_folder}")
-
+                # copy the file
+                shutil.copy(source_file, target_file)
+                print(f"copied {filename} to {digit_folder}")
+                
+                # convert the dicom into bitmap and store it in the new location
+                
+                # dicom2jpg.dicom2jpg(source_file,target_root=target_dir)
+                # print(f"converted {filename} to {digit_folder}")
 
 
 # Example usage
